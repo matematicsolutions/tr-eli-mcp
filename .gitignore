@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets / local config (never source)
+.env
+.mcp.json
+
+# Local runtime (never source)
+.matematic/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Note: tests/fixtures/* ARE committed - public Bedesten data needed for offline tests.

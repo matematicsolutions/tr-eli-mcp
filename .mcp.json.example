@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "tr-eli-mcp": {
+      "command": "tr-eli-mcp",
+      "env": {
+        "TR_ELI_BASE_URL": "https://bedesten.adalet.gov.tr/mevzuat",
+        "TR_ELI_CACHE_DIR": "~/.matematic/cache/tr-eli",
+        "TR_ELI_AUDIT_DIR": "~/.matematic/audit"
+      }
+    }
+  }
+}
