@@ -157,7 +157,7 @@ class BedestenClient:
 
     async def get_document_content(self, mevzuat_id: str) -> dict[str, object]:
         """Fetch full document content (base64 HTML, decoded by caller)."""
-        inner = {"documentType": "MEVZUAT", "id": mevzuat_id}
+        inner: dict[str, object] = {"documentType": "MEVZUAT", "id": mevzuat_id}
         return await self._post(
             "/getDocumentContent",
             _wrap(inner),
@@ -167,7 +167,7 @@ class BedestenClient:
 
     async def get_article_content(self, madde_id: str) -> dict[str, object]:
         """Fetch a single article's content by maddeId (base64 HTML, decoded by caller)."""
-        inner = {"documentType": "MADDE", "id": madde_id}
+        inner: dict[str, object] = {"documentType": "MADDE", "id": madde_id}
         return await self._post(
             "/getDocumentContent",
             _wrap(inner),
@@ -177,7 +177,7 @@ class BedestenClient:
 
     async def get_article_tree(self, mevzuat_id: str) -> dict[str, object]:
         """Fetch the article tree (madde agaci / table of contents) for a document."""
-        inner = {"mevzuatId": mevzuat_id}
+        inner: dict[str, object] = {"mevzuatId": mevzuat_id}
         return await self._post(
             "/mevzuatMaddeTree",
             _wrap(inner),

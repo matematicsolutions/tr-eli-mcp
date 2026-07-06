@@ -55,7 +55,8 @@ def _format_gazette_date(value: Any) -> str | None:
 def _tur_name(dok: dict[str, Any]) -> str | None:
     tur = dok.get("mevzuatTur")
     if isinstance(tur, dict):
-        return _first(tur, "description", "name")
+        name = _first(tur, "description", "name")
+        return str(name) if name is not None else None
     return None
 
 

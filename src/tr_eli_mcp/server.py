@@ -29,6 +29,7 @@ from .citations import (
 )
 from .client import DEFAULT_BASE_URL, BedestenClient, TrError
 from .models import (
+    ArticleNode,
     ArticleTree,
     Legislation,
     LegislationContent,
@@ -297,7 +298,9 @@ async def tr_get_legislation_toc(mevzuat_id: str) -> ArticleTree:
         )
         raise ToolError("not_found", f"No article tree available for mevzuat_id={cleaned!r}.")
 
-    result = ArticleTree(mevzuat_id=cleaned, nodes=nodes)
+    result = ArticleTree(
+        mevzuat_id=cleaned, nodes=[ArticleNode.model_validate(n) for n in nodes]
+    )
     audit.log(
         tool="tr_get_legislation_toc",
         input_hash=input_hash,
