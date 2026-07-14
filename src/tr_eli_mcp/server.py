@@ -27,6 +27,7 @@ from .citations import (
     parse_search,
     strip_html,
 )
+from . import runtime
 from .client import DEFAULT_BASE_URL, BedestenClient, TrError
 from .models import (
     ArticleNode,
@@ -96,7 +97,7 @@ mcp: FastMCP = FastMCP(name="tr-eli-mcp", instructions=INSTRUCTIONS)
 
 
 def _base_url() -> str:
-    return os.environ.get("TR_ELI_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
+    return os.environ.get("TR_ELI_BASE_URL", runtime.base_url("eli", DEFAULT_BASE_URL)).rstrip("/")
 
 
 def _audit() -> AuditLogger:
