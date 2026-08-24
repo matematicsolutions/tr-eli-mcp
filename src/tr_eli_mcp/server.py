@@ -52,6 +52,7 @@ This MCP server exposes Turkish legislation through the Adalet Bakanligi (Minist
 
 ## Hard constraints
 
+- **Do not answer past the edge of this corpus** - when a search comes back empty, or the question touches material this connector does not carry, call `tr_coverage` and relay what it says is missing. Absence here is not absence in the law.
 - **eli_uri is the citability key, but Turkey does NOT publish native ELI (/eli/) URIs.** `eli_uri` therefore carries the canonical, resolvable `https://www.mevzuat.gov.tr/mevzuat?...` URL for the document (or a Bedesten API fallback if that URL is absent from the record). Never fabricate a `/eli/` URI.
 - **Cite using the Turkish convention** - law number + name + Official Gazette (Resmi Gazete) date/number, e.g. "5237 sayili Turk Ceza Kanunu (Resmi Gazete: 12/10/2004, Sayi: 25611)". `human_readable_citation` already carries this.
 - **Every response has `human_readable_citation` + `source_url`** - cite both to the user.
