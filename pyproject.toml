@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tr-eli-mcp"
-version = "0.3.1"
+version = "0.3.2"
 description = "MCP server for Turkish legislation via the Adalet Bakanligi Bedesten API — fetch legislation with resolvable identifiers and verifiable citations."
 readme = "README.md"
 license = { text = "Apache-2.0" }
