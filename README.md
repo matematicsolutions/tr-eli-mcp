@@ -33,6 +33,7 @@ map strictly to EU-27 membership.
 | `tr_get_legislation_content(mevzuat_id)` | The full text of one document (HTML converted to plain text). |
 | `tr_get_legislation_toc(mevzuat_id)` | The article tree (madde agaci / table of contents) of one document. |
 | `tr_list_legislation_types()` | Enumerate all legislation types with live document counts (KANUN, KHK, YONETMELIK, ...). |
+| `tr_coverage()` | Declare what this connector covers, when each family was captured, and - explicitly - what it does NOT cover. Every gap carries a fallback. |
 
 Every response carries the **citation contract**:
 

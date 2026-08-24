@@ -38,6 +38,7 @@ from .models import (
     LegislationTypeList,
     SearchResult,
 )
+from .coverage import Coverage, build_coverage
 
 INSTRUCTIONS = """\
 This MCP server exposes Turkish legislation through the Adalet Bakanligi (Ministry of Justice) Bedesten API (bedesten.adalet.gov.tr/mevzuat, keyless). Bedesten is the JSON backend behind the mevzuat.adalet.gov.tr search portal, itself a mirror of the canonical mevzuat.gov.tr legislation database. Every response carries a stable `eli_uri`, a `human_readable_citation` and a `source_url` (the citation contract).
@@ -314,6 +315,20 @@ async def tr_get_legislation_toc(mevzuat_id: str) -> ArticleTree:
 
 # ---------------------------------------------------------------------------
 # tr_list_legislation_types
+@mcp.tool(annotations=READ_ONLY)
+async def tr_coverage() -> Coverage:
+    """Declare what this connector covers, how it is sourced, and what it does NOT cover.
+
+    Call this before telling a user that the law "does not contain" something, and whenever
+    a search comes back empty: the absence may be a gap in this connector rather than in the
+    law. Every gap carries a fallback saying where to look instead.
+
+    Returns:
+        ``Coverage`` with families, an as-of note, and a non-empty list of known gaps.
+    """
+    return build_coverage()
+
+
 # ---------------------------------------------------------------------------
 
 
