@@ -93,7 +93,7 @@ without reinstalling Windows.
 - **Public data only.** Read-only against the keyless Adalet Bakanligi Bedesten API; nothing is
   sent beyond the query / document id.
 - **Audit log.** Every call appends one JSON line to `~/.matematic/audit/tr-eli-mcp.jsonl`
-  (AI Act art. 12 record-keeping).
+  (record-keeping).
 - **Vendor-neutral.** No LLM provider, no telemetry; own backoff + on-disk cache.
 - **No fabrication.** Identifiers and titles are parsed from the source record. If Bedesten's
   schema changes, the connector fails loudly rather than returning stale or invented data.
