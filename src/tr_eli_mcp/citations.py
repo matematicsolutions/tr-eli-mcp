@@ -175,8 +175,11 @@ def decode_document_content(body: dict[str, Any]) -> tuple[str, str] | None:
     mime_type = _first(data, "mimeType", "mimetype") or "text/html"
     try:
         decoded = base64.b64decode(raw).decode("utf-8", errors="replace")
-    except Exception:
-        return None
+    except Exception as exc:
+        # 2026-09-24: content that IS there but cannot be decoded is a source failure,
+        # not "no content" - returning None made the tool answer `not_found`
+        # (pattern from aws/context-ontology-accelerator issue 59).
+        raise ValueError(f"undecodable base64 content from upstream: {type(exc).__name__}") from exc
     return decoded, str(mime_type)
 
 

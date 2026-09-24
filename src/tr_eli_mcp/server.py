@@ -222,7 +222,20 @@ async def tr_get_legislation_content(mevzuat_id: str) -> LegislationContent:
             )
             raise _map_upstream(exc) from exc
 
-    decoded = decode_document_content(body)
+    try:
+        decoded = decode_document_content(body)
+    except ValueError as exc:
+        audit.log(
+            tool="tr_get_legislation_content",
+            input_hash=input_hash,
+            output_count_or_size=0,
+            duration_ms=t.duration_ms,
+            status="error",
+            error="upstream_error",
+        )
+        raise ToolError("upstream_error",
+                        f"Bedesten returned undecodable content for mevzuat_id={cleaned!r}; "
+                        "this is a source failure, not a missing document.") from exc
     if decoded is None:
         audit.log(
             tool="tr_get_legislation_content",
