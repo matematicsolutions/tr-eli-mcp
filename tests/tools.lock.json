@@ -1,0 +1,673 @@
+{
+  "package_version": "0.3.4",
+  "tools": {
+    "tr_coverage": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Declare what this connector covers, how it is sourced, and what it does NOT cover.\n\nCall this before telling a user that the law \"does not contain\" something, and whenever\na search comes back empty: the absence may be a gap in this connector rather than in the\nlaw. Every gap carries a fallback saying where to look instead.\n\nReturns:\n    ``Coverage`` with families, an as-of note, and a non-empty list of known gaps.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "tr_coverage",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "What this connector covers, how it is sourced, and what it does not cover.",
+          "properties": {
+            "as_of_note": {
+              "description": "States what the dates mean, and what they do not promise.",
+              "type": "string"
+            },
+            "families": {
+              "items": {
+                "additionalProperties": true,
+                "description": "One data family this connector exposes.",
+                "properties": {
+                  "captured_at": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Date this family was last captured (ISO). None when queried live."
+                  },
+                  "live": {
+                    "default": true,
+                    "description": "True when queried live instead of from a snapshot.",
+                    "type": "boolean"
+                  },
+                  "name": {
+                    "description": "Data family, e.g. 'Federal legislation'.",
+                    "type": "string"
+                  },
+                  "source": {
+                    "description": "Official source the data comes from.",
+                    "type": "string"
+                  },
+                  "tool": {
+                    "description": "Tool or tools that reach this family.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "tool",
+                  "source"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "known_gaps": {
+              "description": "Never empty. An empty list would mean 'not checked', not 'no gaps'.",
+              "items": {
+                "additionalProperties": true,
+                "description": "A known, named hole in this connector's coverage - plus the way around it.",
+                "properties": {
+                  "fallback": {
+                    "description": "Where to go instead.",
+                    "type": "string"
+                  },
+                  "family": {
+                    "description": "Which family the gap belongs to.",
+                    "type": "string"
+                  },
+                  "id": {
+                    "description": "Stable gap identifier.",
+                    "type": "string"
+                  },
+                  "missing": {
+                    "description": "What is NOT available through this connector.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "family",
+                  "missing",
+                  "fallback"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "status": {
+              "default": "ok",
+              "enum": [
+                "ok",
+                "degraded",
+                "failed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "as_of_note"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "ced9197ae362d9a40f2ece828eaf8a7b0955ea32fad0e0eea3e6d8add1097d5a"
+    },
+    "tr_get_legislation_content": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Fetch the full text of a Turkish legislative document by its mevzuat_id.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "mevzuat_id": {
+              "description": "Document id, from a ``tr_search_legislation`` result.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "mevzuat_id"
+          ],
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "tr_get_legislation_content",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "Result of ``tr_get_legislation_content``.",
+          "properties": {
+            "byte_size": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "content": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "dataset_note": {
+              "default": "This server covers Turkish legislation (Kanun/laws, KHK/decree-laws, Tuzuk/statutes, yonetmelik/regulations, Cumhurbaskanligi kararnameleri/presidential decrees, teblig/communiques and more) via the Adalet Bakanligi (Ministry of Justice) Bedesten API (bedesten.adalet.gov.tr/mevzuat), the keyless JSON backend behind the mevzuat.adalet.gov.tr search portal and a mirror of the canonical mevzuat.gov.tr legislation database. Turkey does NOT publish native ELI (/eli/) URIs - eli_uri carries the canonical, resolvable mevzuat.gov.tr URL for the document instead. Case law (Yargitay, Anayasa Mahkemesi) is NOT covered by this server: Yargitay's karararama system was unreachable at build time and the Anayasa Mahkemesi norm-kararlar-bilgi-bankasi is a client-rendered SPA with no discovered server API. See DISCOVERY.md.",
+              "type": "string"
+            },
+            "eli_uri": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "format": {
+              "default": "html-to-text",
+              "type": "string"
+            },
+            "human_readable_citation": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "mevzuat_id": {
+              "type": "string"
+            },
+            "source_url": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "mevzuat_id"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "b4f726655bdf889aedde0a585fa01dc4e9d27c1eef631ec14c4dcb560596c7b6"
+    },
+    "tr_get_legislation_toc": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Fetch the article tree (madde agaci / table of contents) of a document.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "mevzuat_id": {
+              "description": "Document id, from a ``tr_search_legislation`` result.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "mevzuat_id"
+          ],
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "tr_get_legislation_toc",
+        "outputSchema": {
+          "$defs": {
+            "ArticleNode": {
+              "additionalProperties": true,
+              "description": "One node in a legislation's article tree (madde agaci / table of contents).",
+              "properties": {
+                "children": {
+                  "items": {
+                    "$ref": "#/$defs/ArticleNode"
+                  },
+                  "type": "array"
+                },
+                "madde_baslik": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                },
+                "madde_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                },
+                "madde_no": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                },
+                "parent_madde_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                }
+              },
+              "type": "object"
+            }
+          },
+          "additionalProperties": true,
+          "description": "Result of ``tr_get_legislation_toc``.",
+          "properties": {
+            "dataset_note": {
+              "default": "This server covers Turkish legislation (Kanun/laws, KHK/decree-laws, Tuzuk/statutes, yonetmelik/regulations, Cumhurbaskanligi kararnameleri/presidential decrees, teblig/communiques and more) via the Adalet Bakanligi (Ministry of Justice) Bedesten API (bedesten.adalet.gov.tr/mevzuat), the keyless JSON backend behind the mevzuat.adalet.gov.tr search portal and a mirror of the canonical mevzuat.gov.tr legislation database. Turkey does NOT publish native ELI (/eli/) URIs - eli_uri carries the canonical, resolvable mevzuat.gov.tr URL for the document instead. Case law (Yargitay, Anayasa Mahkemesi) is NOT covered by this server: Yargitay's karararama system was unreachable at build time and the Anayasa Mahkemesi norm-kararlar-bilgi-bankasi is a client-rendered SPA with no discovered server API. See DISCOVERY.md.",
+              "type": "string"
+            },
+            "mevzuat_id": {
+              "type": "string"
+            },
+            "nodes": {
+              "items": {
+                "$ref": "#/$defs/ArticleNode"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "mevzuat_id"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "70320da92149f9e50e6769afee4793a1821f22005537ab4f7f1debf9f9d6b72d"
+    },
+    "tr_list_legislation_types": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Enumerate all Turkish legislation types with live document counts.\n\nReturns:\n    ``LegislationTypeList`` with items like KANUN (laws), KHK (decree-laws),\n    YONETMELIK (regulations), CB_KARARNAME (presidential decrees), etc.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {},
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "tr_list_legislation_types",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "Result of ``tr_list_legislation_types``.",
+          "properties": {
+            "dataset_note": {
+              "default": "This server covers Turkish legislation (Kanun/laws, KHK/decree-laws, Tuzuk/statutes, yonetmelik/regulations, Cumhurbaskanligi kararnameleri/presidential decrees, teblig/communiques and more) via the Adalet Bakanligi (Ministry of Justice) Bedesten API (bedesten.adalet.gov.tr/mevzuat), the keyless JSON backend behind the mevzuat.adalet.gov.tr search portal and a mirror of the canonical mevzuat.gov.tr legislation database. Turkey does NOT publish native ELI (/eli/) URIs - eli_uri carries the canonical, resolvable mevzuat.gov.tr URL for the document instead. Case law (Yargitay, Anayasa Mahkemesi) is NOT covered by this server: Yargitay's karararama system was unreachable at build time and the Anayasa Mahkemesi norm-kararlar-bilgi-bankasi is a client-rendered SPA with no discovered server API. See DISCOVERY.md.",
+              "type": "string"
+            },
+            "items": {
+              "items": {
+                "additionalProperties": true,
+                "description": "One legislation type entry from ``mevzuatTypes``.",
+                "properties": {
+                  "count": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "mevzuat_tur": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "mevzuat_tur_adi": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "mevzuat_tur_id": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "sha256": "17d419f5dd13777d23e9294208094fb366247ef4dab2f59ac7d2280e0255f908"
+    },
+    "tr_search_legislation": {
+      "descriptor": {
+        "annotations": {
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": true,
+          "readOnlyHint": true
+        },
+        "description": "Search Turkish legislation by title and/or full text.",
+        "inputSchema": {
+          "additionalProperties": false,
+          "properties": {
+            "baslikta_ara": {
+              "default": true,
+              "description": "Search in title only (default True). Set False to search full text too.",
+              "type": "boolean"
+            },
+            "mevzuat_no": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Optional legislation number filter."
+            },
+            "mevzuat_turu": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Optional legislation type filter, e.g. ``\"KANUN\"``, ``\"KHK\"``,\n``\"YONETMELIK\"``. See ``tr_list_legislation_types`` for the full list."
+            },
+            "query": {
+              "description": "Search phrase, e.g. ``\"vergi\"``.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "type": "object"
+        },
+        "meta": {
+          "fastmcp": {
+            "tags": []
+          }
+        },
+        "name": "tr_search_legislation",
+        "outputSchema": {
+          "additionalProperties": true,
+          "description": "Result of ``tr_search_legislation``.",
+          "properties": {
+            "dataset_note": {
+              "default": "This server covers Turkish legislation (Kanun/laws, KHK/decree-laws, Tuzuk/statutes, yonetmelik/regulations, Cumhurbaskanligi kararnameleri/presidential decrees, teblig/communiques and more) via the Adalet Bakanligi (Ministry of Justice) Bedesten API (bedesten.adalet.gov.tr/mevzuat), the keyless JSON backend behind the mevzuat.adalet.gov.tr search portal and a mirror of the canonical mevzuat.gov.tr legislation database. Turkey does NOT publish native ELI (/eli/) URIs - eli_uri carries the canonical, resolvable mevzuat.gov.tr URL for the document instead. Case law (Yargitay, Anayasa Mahkemesi) is NOT covered by this server: Yargitay's karararama system was unreachable at build time and the Anayasa Mahkemesi norm-kararlar-bilgi-bankasi is a client-rendered SPA with no discovered server API. See DISCOVERY.md.",
+              "type": "string"
+            },
+            "items": {
+              "items": {
+                "additionalProperties": true,
+                "description": "A Turkish legislative document, parsed from a Bedesten mevzuat record.",
+                "properties": {
+                  "eli_uri": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "gerekce_id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "human_readable_citation": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "mevzuat_adi": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "mevzuat_id": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "mevzuat_no": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "mevzuat_tertip": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "mevzuat_tur_id": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "mevzuat_turu": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "resmi_gazete_sayisi": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "resmi_gazete_tarihi": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "source_url": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "query": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            "returned": {
+              "type": "integer"
+            },
+            "total_matched": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "total_matched",
+            "returned"
+          ],
+          "type": "object"
+        }
+      },
+      "sha256": "6550d50af78b9a05379756ec4f0331062e5e07af0e0d29c8ca5b31b99c5f946c"
+    }
+  },
+  "toolset_sha256": "123c37455f2c7a9452b1225cefda52395439cf5519b7caad81dd2eaa4b3daa97"
+}
