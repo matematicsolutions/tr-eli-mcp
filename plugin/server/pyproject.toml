@@ -1,0 +1,11 @@
+# Runtime of the Claude plugin: pins tr-eli-mcp and every transitive dependency
+# (with hashes) in uv.lock, so the plugin runs exactly what was reviewed.
+# Started by plugin.json as: uv run --frozen --project ${CLAUDE_PLUGIN_ROOT}/server tr-eli-mcp
+[project]
+name = "tr-eli-mcp-plugin-runtime"
+version = "0.3.4"
+requires-python = ">=3.11,<3.14"
+dependencies = ["tr-eli-mcp==0.3.4"]
+
+[tool.uv]
+package = false
